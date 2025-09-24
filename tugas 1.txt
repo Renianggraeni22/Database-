@@ -1,0 +1,105 @@
+-- pembuatan table jenis_produk
+CREATE TABLE jenis_produk (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    nama VARCHAR(45) NOT NULL
+) ENGINE=InnoDB;
+
+-- pembuatan table produk
+CREATE TABLE produk (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    kode VARCHAR(10) NOT NULL UNIQUE,
+    nama VARCHAR(45) NOT NULL,
+    harga_beli DOUBLE,
+    harga_jual DOUBLE,
+    stok INT,
+    min_stok INT,
+    jenis_produk_id INT,
+    FOREIGN KEY (jenis_produk_id) REFERENCES jenis_produk(id)
+);
+
+-- input data ke tabel jenis_produk
+INSERT INTO jenis_produk (id, nama)
+VALUES
+    (1, 'Elektronik'),
+    (2, 'Furniture'),
+    (3, 'Makanan'),
+    (4, 'Minuman');
+
+-- input data ke tabel produk
+INSERT INTO produk (kode, nama, harga_beli, harga_jual, stok, min_stok, jenis_produk_id)
+VALUES
+    ('PR001', 'Laptop ASUS', 5000000, 6000000, 10, 2, 1),
+    ('PR002', 'Smartphone Samsung', 3000000, 3500000, 15, 3, 1),
+    ('PR003', 'Meja Belajar', 500000, 750000, 20, 5, 2);
+
+-- menampilkan data dari tabel produk
+SELECT * FROM produk;
+
+-- pembuatan table vendor
+CREATE TABLE vendor (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    kode VARCHAR(10) NOT NULL UNIQUE,
+    nama VARCHAR(45) NOT NULL,
+    alamat VARCHAR(100),
+    telepon VARCHAR(20)
+);
+
+-- input data ke tabel vendor
+INSERT INTO vendor (kode, nama, alamat, telepon)
+VALUES
+    ('V001', 'PT Elektronik Jaya', 'Jakarta', '0211234567'),
+    ('V002', 'CV Mebel Bagus', 'Bandung', '0227654321'),
+    ('V003', 'PT Smart Data Global', 'Makassar', '027538264');
+
+-- menampilkan data dari tabel vendor
+SELECT * FROM vendor;
+
+-- pembuatan table pembelian
+CREATE TABLE pembelian (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    tanggal DATE,
+    total DOUBLE,
+    vendor_id INT,
+    FOREIGN KEY (vendor_id) REFERENCES vendor(id)
+);
+
+-- input data ke tabel pembelian
+INSERT INTO pembelian (tanggal, total, vendor_id)
+VALUES
+    ('2025-09-20', 8000000, 1),
+    ('2025-06-21', 1250000, 2),
+    ('2025-08-25', 5000000, 3);
+
+-- menampilkan data dari tabel pembelian
+SELECT * FROM pembelian;
+
+-- pembuatan table pesanan_items
+CREATE TABLE pesanan_items (
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    pesanan_id INT NOT NULL,
+    produk_id INT NOT NULL,
+    jumlah INT NOT NULL,
+    harga DOUBLE NOT NULL,
+    FOREIGN KEY (pesanan_id) REFERENCES pesanan(id),
+    FOREIGN KEY (produk_id) REFERENCES produk(id)
+) ENGINE=InnoDB;
+
+-- input data ke tabel pesanan_items
+INSERT INTO pesanan_items (pesanan_id, produk_id, jumlah, harga)
+VALUES
+    (1, 4, 2, 6000000),   -- Laptop ASUS
+    (1, 5, 1, 3500000),   -- Smartphone Samsung
+    (2, 6, 5, 750000);    -- Meja Belajar
+
+-- menampilkan isi tabel pesanan_items
+SELECT * FROM pesanan_items;
+
+-- menampilkan detail pesanan dengan join pelanggan & produk
+SELECT p.id AS no_pesanan, p.tanggal, pl.nama AS pelanggan, pr.nama AS produk,
+       pi.jumlah, pi.harga
+FROM pesanan p
+JOIN pelanggan pl ON p.pelanggan_id = pl.id
+JOIN pesanan_items pi ON p.id = pi.pesanan_id
+JOIN produk pr ON pi.produk_id = pr.id;
+
+
