@@ -1,0 +1,55 @@
+-- pembuatan table
+CREATE TABLE kartu (
+    id int PRIMARY KEY AUTO_INCREMENT,
+    kode varchar(4) UNIQUE,
+    nama varchar(30) NOT NULL,
+    diskon double DEFAULT 0,
+    iuran double DEFAULT 0 );
+
+-- pembuatan tabel berelasi
+MariaDB [dbpos_SIBMandiri]> CREATE TABLE pesanan(
+    ->     id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    ->     tanggal date,
+    ->     total double,
+    ->     pelanggan_id int NOT NULL REFERENCES pelanggan(id)
+    -> );
+
+-- ALTER TABLE ADD COLUMN
+ALTER TABLE pelanggan ADD COLUMN IF NOT EXISTS
+kartu_id INT NOT NULL REFERENCES kartu(id) AFTER email;
+
+ALTER TABEL ubah nama column
+ALTER TABLE jenis_produk CHANGE nama jenis VARCHAR(45) NOT NULL;
+
+-- INSERT DATA tanpa filed
+MariaDB [dbpos_SIBMandiri]> INSERT INTO jenis VALUES
+    -> ('','Elektronik'),
+    -> ('','Furniture'),
+    -> ('','Makanan'),
+    -> ('','Minuman');
+Query OK, 4 rows affected, 4 warnings (0.006 sec)
+Records: 4  Duplicates: 0  Warnings: 4
+
+MariaDB [dbpos_SIBMandiri]> SELECT * FROM jenis;
++----+------------+
+| id | jenis      |
++----+------------+
+|  1 | Elektronik |
+|  2 | Furniture  |
+|  3 | Makanan    |
+|  4 | Minuman    |
++----+------------+
+4 rows in set (0.001 sec)
+
+-- insert data menggunakan filed
+MariaDB [dbpos_SIBMandiri]> SELECT * FROM kartu;
++----+------+---------+--------+-------+
+| id | kode | nama    | diskon | iuran |
++----+------+---------+--------+-------+
+|  1 | K101 | Premium |   3000 |  3000 |
+|  2 | K102 | Gold    |   4000 |  4000 |
+|  3 | K103 | Silver  |   1000 |  1000 |
++----+------+---------+--------+-------+
+3 rows in set (0.001 sec)
+
+-- 

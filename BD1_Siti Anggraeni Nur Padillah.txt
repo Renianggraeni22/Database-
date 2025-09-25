@@ -1,3 +1,5 @@
+https://github.com/Renianggraeni22/Database-.git
+
 -- pembuatan table jenis_produk
 CREATE TABLE jenis_produk (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,

@@ -1,0 +1,164 @@
+Worksheet 2
+SOAL 2.2
+
+-- Tampilkan data produk yang stoknya 4 atau 1
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM produk
+    -> WHERE stok = 4 OR stok = 1;
++----+------+------------------+------------+------------+------+----------+-----------------+
+| id | kode | nama             | harga_beli | harga_jual | stok | min_stok | jenis_produk_id |
++----+------+------------------+------------+------------+------+----------+-----------------+
+|  2 | TV02 | Televisi 40 inch |    5500000 |    7440000 |    4 |        2 |               1 |
+|  4 | M001 | Meja Makan       |     500000 |     600000 |    4 |        3 |               2 |
++----+------+------------------+------------+------------+------+----------+-----------------+
+2 rows in set (0.023 sec)
+
+-- Tampilkan data produk dengan harga jual < 5 juta tetapi > 500 ribu
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM produk
+    -> WHERE harga_jual < 5000000
+    ->   AND harga_jual > 500000;
++----+------+----------------+------------+------------+------+----------+-----------------+
+| id | kode | nama           | harga_beli | harga_jual | stok | min_stok | jenis_produk_id |
++----+------+----------------+------------+------------+------+----------+-----------------+
+|  3 | K001 | Kulkas 2 pintu |    3500000 |    4680000 |    6 |        2 |               1 |
+|  4 | M001 | Meja Makan     |     500000 |     600000 |    4 |        3 |               2 |
++----+------+----------------+------------+------------+------+----------+-----------------+
+2 rows in set (0.002 sec)
+
+-- Tampilkan data produk yang harus segera ditambah stoknya (stok < min_stok)
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM produk
+    -> WHERE stok < min_stok;
++----+------+-----------+------------+------------+------+----------+-----------------+
+| id | kode | nama      | harga_beli | harga_jual | stok | min_stok | jenis_produk_id |
++----+------+-----------+------------+------------+------+----------+-----------------+
+|  5 | TK01 | Teh Kotak |       3000 |       3500 |    6 |       10 |               4 |
++----+------+-----------+------------+------------+------+----------+-----------------+
+1 row in set (0.001 sec)
+
+-- Tampilkan data pelanggan yang lahir di Jakarta dan gender perempuan
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM pelanggan
+    -> WHERE tmp_lahir = 'Jakarta' AND jk = 'P';
++----+------+-------------+------+-----------+------------+------------------+----------+
+| id | kode | nama        | jk   | tmp_lahir | tgl_lahir  | email            | kartu_id |
++----+------+-------------+------+-----------+------------+------------------+----------+
+|  6 | C006 | Gayatri Dwi | P    | Jakarta   | 1987-11-28 | gaya87@gmail.com |        1 |
+|  7 | C007 | Dewi Gyat   | P    | Jakarta   | 1988-12-01 | giyat@gmail.com  |        1 |
++----+------+-------------+------+-----------+------------+------------------+----------+
+2 rows in set (0.024 sec)
+
+
+SOAL 2.3
+-- Tampilkan produk dengan kode awal K atau M
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM produk
+    -> WHERE kode LIKE 'K%' OR kode LIKE 'M%';
++----+------+----------------+------------+------------+------+----------+-----------------+
+| id | kode | nama           | harga_beli | harga_jual | stok | min_stok | jenis_produk_id |
++----+------+----------------+------------+------------+------+----------+-----------------+
+|  3 | K001 | Kulkas 2 pintu |    3500000 |    4680000 |    6 |        2 |               1 |
+|  4 | M001 | Meja Makan     |     500000 |     600000 |    4 |        3 |               2 |
++----+------+----------------+------------+------------+------+----------+-----------------+
+2 rows in set (0.006 sec)
+
+
+SOAL 2.4
+-- Tampilkan produk dengan stok terbanyak
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM produk
+    -> ORDER BY stok DESC
+    -> LIMIT 1;
++----+------+-----------+------------+------------+------+----------+-----------------+
+| id | kode | nama      | harga_beli | harga_jual | stok | min_stok | jenis_produk_id |
++----+------+-----------+------------+------------+------+----------+-----------------+
+|  7 | TB01 | Teh Botol |       2000 |       2500 |   53 |       10 |               4 |
++----+------+-----------+------------+------------+------+----------+-----------------+
+1 row in set (0.024 sec)
+
+
+Worksheet 3
+SOAL 3.1
+-- Tampilkan data pelanggan yang lahir antara tahun 1990 sampai 1999
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM pelanggan
+    -> WHERE YEAR(tgl_lahir) BETWEEN 1990 AND 1999;
++----+------+-------------+------+-----------+------------+----------------------+----------+
+| id | kode | nama        | jk   | tmp_lahir | tgl_lahir  | email                | kartu_id |
++----+------+-------------+------+-----------+------------+----------------------+----------+
+|  8 | C008 | Andre Haru  | L    | Surabaya  | 1990-07-15 | andre.haru@gmail.com |        4 |
+|  9 | C009 | Ahmad Hasan | L    | Surabaya  | 1992-10-15 | ahasan@gmail.com     |        4 |
+| 10 | C010 | Cassanndra  | P    | Belfast   | 1990-11-20 | casa90@gmail.com     |        1 |
++----+------+-------------+------+-----------+------------+----------------------+----------+
+3 rows in set (0.004 sec)
+
+-- Tampilkan data pelanggan yang berulang tahun bulan Februari
+MariaDB [dbkoperasi_sibmandiri]> SELECT *
+    -> FROM pelanggan
+    -> WHERE MONTH(tgl_lahir) = 2;
++----+------+-------------+------+-----------+------------+-----------------+----------+
+| id | kode | nama        | jk   | tmp_lahir | tgl_lahir  | email           | kartu_id |
++----+------+-------------+------+-----------+------------+-----------------+----------+
+|  3 | C003 | Sekar Mirah | P    | Kediri    | 1983-02-20 | mirah@yahoo.com |        1 |
++----+------+-------------+------+-----------+------------+-----------------+----------+
+1 row in set (0.001 sec)
+
+
+SOAL 3.2
+-- Jumlah produk dengan kode awal K
+MariaDB [dbkoperasi_sibmandiri]> SELECT COUNT(*) AS jumlah_produk
+    -> FROM produk
+    -> WHERE kode LIKE 'K%';
++---------------+
+| jumlah_produk |
++---------------+
+|             1 |
++---------------+
+1 row in set (0.024 sec)
+
+-- Total asset keseluruhan produk
+MariaDB [dbkoperasi_sibmandiri]> SELECT SUM(harga_beli * stok) AS total_asset
+    -> FROM produk;
++-------------+
+| total_asset |
++-------------+
+|   502624000 |
++-------------+
+1 row in set (0.023 sec)
+
+
+SOAL 3.4
+-- Produk dengan harga di atas rata-rata harga produk
+MariaDB [dbkoperasi_sibmandiri]> SELECT id, nama, harga_jual
+    -> FROM produk
+    -> WHERE harga_jual > (SELECT AVG(harga_jual) FROM produk);
++----+------------------+------------+
+| id | nama             | harga_jual |
++----+------------------+------------+
+|  2 | Televisi 40 inch |    7440000 |
+|  6 | PC Desktop HP    |    9600000 |
+|  8 | Notebook Acer    |   10800000 |
+|  9 | Notebook Lenovo  |   12000000 |
+| 10 | Laptop HP        |   13000000 |
++----+------------------+------------+
+5 rows in set (0.026 sec)
+
+-- Pelanggan yang memiliki kartu dengan iuran > 90rb
+MariaDB [dbkoperasi_sibmandiri]> SELECT pelanggan.id, pelanggan.nama, kartu.nama AS jenis_kartu, kartu.iuran
+    -> FROM pelanggan
+    -> JOIN kartu ON pelanggan.kartu_id = kartu.id
+    -> WHERE kartu.iuran > 90000;
++----+--------------+---------------+--------+
+| id | nama         | jenis_kartu   | iuran  |
++----+--------------+---------------+--------+
+|  1 | Agung Sedayu | Gold Utama    | 100000 |
+|  3 | Sekar Mirah  | Gold Utama    | 100000 |
+|  6 | Gayatri Dwi  | Gold Utama    | 100000 |
+|  7 | Dewi Gyat    | Gold Utama    | 100000 |
+| 10 | Cassanndra   | Gold Utama    | 100000 |
+|  2 | Pandan Wangi | Platinum Jaya | 150000 |
+|  5 | Pradabashu   | Platinum Jaya | 150000 |
++----+--------------+---------------+--------+
+7 rows in set (0.024 sec)
+
