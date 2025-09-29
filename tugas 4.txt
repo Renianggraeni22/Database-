@@ -1,0 +1,98 @@
+MariaDB [dbkoperasi_sibmandiri]> DESC pesanan;
++--------------+---------+------+-----+---------+----------------+
+| Field        | Type    | Null | Key | Default | Extra          |
++--------------+---------+------+-----+---------+----------------+
+| id           | int(11) | NO   | PRI | NULL    | auto_increment |
+| tanggal      | date    | YES  |     | NULL    |                |
+| total        | double  | YES  |     | NULL    |                |
+| pelanggan_id | int(11) | NO   | MUL | NULL    |                |
++--------------+---------+------+-----+---------+----------------+
+4 rows in set (0.050 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> DESC pelanggan;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| id        | int(11)     | NO   | PRI | NULL    | auto_increment |
+| kode      | varchar(10) | YES  |     | NULL    |                |
+| nama      | varchar(45) | YES  | MUL | NULL    |                |
+| jk        | char(1)     | YES  |     | NULL    |                |
+| tmp_lahir | varchar(30) | YES  |     | NULL    |                |
+| tgl_lahir | date        | YES  | MUL | NULL    |                |
+| email     | varchar(45) | YES  |     | NULL    |                |
+| kartu_id  | int(11)     | NO   | MUL | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+8 rows in set (0.048 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> DESC produk;
++-----------------+-------------+------+-----+---------+----------------+
+| Field           | Type        | Null | Key | Default | Extra          |
++-----------------+-------------+------+-----+---------+----------------+
+| id              | int(11)     | NO   | PRI | NULL    | auto_increment |
+| kode            | varchar(10) | YES  | UNI | NULL    |                |
+| nama            | varchar(45) | YES  |     | NULL    |                |
+| harga_beli      | double      | YES  |     | NULL    |                |
+| harga_jual      | double      | YES  |     | NULL    |                |
+| stok            | int(11)     | YES  |     | NULL    |                |
+| min_stok        | int(11)     | YES  |     | NULL    |                |
+| jenis_produk_id | int(11)     | NO   | MUL | NULL    |                |
++-----------------+-------------+------+-----+---------+----------------+
+8 rows in set (0.049 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> DESC jenis_produk;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| id    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| nama  | varchar(45) | YES  |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+2 rows in set (0.049 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> DESC pesanan_items;
++------------+---------+------+-----+---------+----------------+
+| Field      | Type    | Null | Key | Default | Extra          |
++------------+---------+------+-----+---------+----------------+
+| id         | int(11) | NO   | PRI | NULL    | auto_increment |
+| produk_id  | int(11) | NO   | MUL | NULL    |                |
+| pesanan_id | int(11) | NO   | MUL | NULL    |                |
+| qty        | int(11) | YES  |     | NULL    |                |
+| harga      | double  | YES  |     | NULL    |                |
++------------+---------+------+-----+---------+----------------+
+5 rows in set (0.049 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> CREATE VIEW view_pesanan_pelanggan_produk AS
+    -> SELECT
+    ->     pesanan.id AS pesanan_id,
+    ->     pesanan.tanggal,
+    ->     pesanan.total,
+    ->     pelanggan.nama AS nama_pelanggan,
+    ->     produk.kode AS kode_produk,
+    ->     produk.nama AS nama_produk,
+    ->     jenis_produk.nama AS nama_jenis_produk,
+    ->     pesanan_items.qty AS jumlah_dipesan,
+    ->     produk.harga_jual AS harga_jual_produk
+    -> FROM pesanan
+    -> INNER JOIN pelanggan
+    ->     ON pesanan.pelanggan_id = pelanggan.id
+    -> INNER JOIN pesanan_items
+    ->     ON pesanan_items.pesanan_id = pesanan.id
+    -> INNER JOIN produk
+    ->     ON pesanan_items.produk_id = produk.id
+    -> INNER JOIN jenis_produk
+    ->     ON produk.jenis_produk_id = jenis_produk.id;
+Query OK, 0 rows affected (0.030 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> SELECT * FROM view_pesanan_pelanggan_produk;
++------------+------------+---------+----------------+-------------+------------------+-------------------+----------------+-------------------+
+| pesanan_id | tanggal    | total   | nama_pelanggan | kode_produk | nama_produk      | nama_jenis_produk | jumlah_dipesan | harga_jual_produk |
++------------+------------+---------+----------------+-------------+------------------+-------------------+----------------+-------------------+
+|          1 | 2015-11-04 | 9720000 | Agung Sedayu   | TV01        | Televisi 21 inch | elektronik        |              1 |           5040000 |
+|          1 | 2015-11-04 | 9720000 | Agung Sedayu   | K001        | Kulkas 2 pintu   | elektronik        |              1 |           4680000 |
+|          3 | 2015-11-04 |       0 | Gayatri Dwi    | TV01        | Televisi 21 inch | elektronik        |              1 |           5040000 |
+|          2 | 2015-11-04 |   17500 | Sekar Mirah    | TK01        | Teh Kotak        | minuman           |              5 |              3500 |
+|          3 | 2015-11-04 |       0 | Gayatri Dwi    | TK01        | Teh Kotak        | minuman           |             10 |              3500 |
+|          5 | 2015-11-04 |       0 | Cassanndra     | TK01        | Teh Kotak        | minuman           |             10 |              3500 |
+|          6 | 2015-11-04 |       0 | Pandan Wangi   | TK01        | Teh Kotak        | minuman           |             20 |              3500 |
++------------+------------+---------+----------------+-------------+------------------+-------------------+----------------+-------------------+
+7 rows in set (0.028 sec)
+
