@@ -1,0 +1,105 @@
+1. Function kategori_harga
+MariaDB [dbkoperasi_sibmandiri]> DELIMITER $$
+MariaDB [dbkoperasi_sibmandiri]> CREATE FUNCTION kategori_harga(harga DOUBLE)
+    -> RETURNS VARCHAR(20)
+    -> DETERMINISTIC
+    -> BEGIN
+    -> DECLARE kategori VARCHAR(20);
+    -> IF harga >= 0 AND harga <= 500000 THEN
+    -> SET kategori = 'murah';
+    -> ELSEIF harga > 500000 AND harga <= 3000000 THEN
+    -> SET kategori = 'sedang';
+    -> ELSEIF harga > 3000000 AND harga <= 10000000 THEN
+    -> SET kategori = 'mahal';
+    -> ELSEIF harga > 10000000 THEN
+    -> SET kategori = 'sangat mahal';
+    -> ELSE
+    -> SET kategori = 'tidak valid';
+    -> END IF;
+    -> RETURN kategori;
+    -> END$$
+Query OK, 0 rows affected (0.031 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> DELIMITER ;
+MariaDB [dbkoperasi_sibmandiri]> SELECT id, nama, harga_jual, kategori_harga(harga_jual) AS kategori
+    -> FROM produk;
++----+------------------+------------+--------------+
+| id | nama             | harga_jual | kategori     |
++----+------------------+------------+--------------+
+|  1 | Televisi 21 inch |    5040000 | mahal        |
+|  2 | Televisi 40 inch |    7440000 | mahal        |
+|  3 | Kulkas 2 pintu   |    4680000 | mahal        |
+|  4 | Meja Makan       |     600000 | sedang       |
+|  5 | Teh Kotak        |       3500 | murah        |
+|  6 | PC Desktop HP    |   10560000 | sangat mahal |
+|  7 | Teh Botol        |       2500 | murah        |
+|  8 | Notebook Acer    |   11880000 | sangat mahal |
+|  9 | Notebook Lenovo  |   13200000 | sangat mahal |
+| 10 | Laptop HP        |   14300000 | sangat mahal |
+| 11 | Meja Rias        |    3000000 | sedang       |
+| 12 | Kursi Kelas      |    4000000 | mahal        |
+| 13 | Kursi Games      |    5000000 | mahal        |
+| 14 | Susu Murni       |      20000 | murah        |
++----+------------------+------------+--------------+
+14 rows in set (0.030 sec)
+
+2. Stored Procedure kurangi_stok
+MariaDB [dbkoperasi_sibmandiri]> DELIMITER $$
+MariaDB [dbkoperasi_sibmandiri]> CREATE PROCEDURE kurangi_stok(IN p_id_produk INT, IN p_jumlah INT)
+    -> BEGIN
+    -> UPDATE produk
+    -> SET stok = stok - p_jumlah
+    -> WHERE id = p_id_produk;
+    -> END$$
+Query OK, 0 rows affected (0.008 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> DELIMITER ;
+MariaDB [dbkoperasi_sibmandiri]> SELECT id, nama, stok FROM produk WHERE id=5;
++----+-----------+------+
+| id | nama      | stok |
++----+-----------+------+
+|  5 | Teh Kotak |   11 |
++----+-----------+------+
+1 row in set (0.023 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> CALL kurangi_stok(5, 2);
+Query OK, 1 row affected (0.010 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> SELECT id, nama, stok FROM produk WHERE id=5;
++----+-----------+------+
+| id | nama      | stok |
++----+-----------+------+
+|  5 | Teh Kotak |    9 |
++----+-----------+------+
+1 row in set (0.001 sec)
+
+3. Trigger trig_kurangi_stok
+MariaDB [dbkoperasi_sibmandiri]> DELIMITER $$
+MariaDB [dbkoperasi_sibmandiri]> CREATE TRIGGER trig_kurangi_stok
+    -> AFTER INSERT ON pesanan_items
+    -> FOR EACH ROW
+    -> BEGIN
+    -> CALL kurangi_stok(NEW.produk_id, NEW.qty);
+    -> END$$
+Query OK, 0 rows affected (0.080 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> DELIMITER ;
+MariaDB [dbkoperasi_sibmandiri]> SELECT id, nama, stok FROM produk WHERE id=2;
++----+------------------+------+
+| id | nama             | stok |
++----+------------------+------+
+|  2 | Televisi 40 inch |    4 |
++----+------------------+------+
+1 row in set (0.036 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> INSERT INTO pesanan_items (produk_id, pesanan_id, qty, harga)
+    -> VALUES (2, 8, 1, 7440000);
+Query OK, 1 row affected (0.065 sec)
+
+MariaDB [dbkoperasi_sibmandiri]> SELECT id, nama, stok FROM produk WHERE id=2;
++----+------------------+------+
+| id | nama             | stok |
++----+------------------+------+
+|  2 | Televisi 40 inch |    2 |
++----+------------------+------+
+1 row in set (0.001 sec)
